@@ -3,6 +3,7 @@ import os
 import numpy as np
 import streamlit as st
 
+
 st.set_page_config(page_title="RPG GPT", page_icon=":game_die:", layout="wide")
 if "character_stats" not in st.session_state:
     st.session_state.character_stats = character_stats = {
@@ -84,6 +85,8 @@ with col2:
             st.write(_e)
         with open(f"characters/{character_name}/character_sheet.json", "w") as file:
             json.dump(char_info_dict, file)
-        st.success(body="Character saved with success!")
+
+if save_button:
+    st.success(body="Character saved with success!")
 
 st.divider()

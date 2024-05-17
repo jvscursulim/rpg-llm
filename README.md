@@ -10,7 +10,7 @@ This project has the goal of create a LLM model specialized to be a RPG master, 
 
 * Step 1: Clone this repository
 ```bash
-git clone
+git clone https://github.com/jvscursulim/rpggpt
 ```
 
 * Step 2: Install miniconda (https://docs.anaconda.com/free/miniconda/index.html)

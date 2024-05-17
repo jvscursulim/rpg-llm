@@ -2,3 +2,5 @@ env
 __pycache__
 img/tmp
 characters
+secrets
+audio
