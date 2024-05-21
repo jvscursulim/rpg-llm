@@ -1,4 +1,3 @@
-# import ollama
 import time
 import torch
 

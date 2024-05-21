@@ -21,6 +21,6 @@ But that's not all! **Role Play Gemini brings your adventures to life with stunn
 * **Voice-Activated Gameplay:**  Dive even deeper into the world of your adventure using voice commands to interact with Gemini and direct your character.
 * **Easy to Use:** No complicated rules or setup—just jump in and start playing! 
 
-**Role Play Gemini is your portal to endless RPG adventures. Download now and let Gemini guide you on an unforgettable journey!** """
+**Role Play Gemini is your portal to endless RPG adventures. Play now and let Gemini guide you on an unforgettable journey!** """
 )
 st.divider()

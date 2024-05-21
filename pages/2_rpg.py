@@ -48,7 +48,7 @@ st.set_page_config(page_title="Role Play Gemini", page_icon=":game_die:", layout
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
-    initial_prompt = """Hi Gemini, I would like that behave like a RPG master, 
+    setup_prompt = """Hi Gemini, I would like that behave like a RPG master, 
     you should to follow Dungeons and Dragons rules. When the user says something 
     that sounds like an action you must to request that the user rolls a d20 and 
     you only have to tell the result of the action after that you receive the dice result.
@@ -56,7 +56,10 @@ if "messages" not in st.session_state:
     At the end of the paragraph you have to write a summary of what you 
     described as a prompt to be used on a text to image model, this summary must 
     have at maximum 77 tokens and also must be between *"""
-    st.session_state.messages.append({"role": "user", "parts": [initial_prompt]})
+    st.session_state.messages.append({"role": "user", "parts": [setup_prompt]})
+    initial_message = """Hello adventurer, I'm Gemini and I'll be your RPG master!
+    Tell me, what kind of adventure do you want to play today?"""
+    st.session_state.messages.append({"role": "ai", "parts": [initial_message]})
     chat_session = model.start_chat(history=st.session_state.messages)
 else:
     chat_session = model.start_chat(history=st.session_state.messages)
@@ -68,8 +71,9 @@ if "images_paths" not in st.session_state:
     st.session_state.images_paths = []
 
 st.title(":crossed_swords: :male_mage: Role Play Gemini :elf: :game_die:")
-with st.container(border=True):
-    col1, col2 = st.columns([0.15, 0.85])
+
+with st.sidebar:
+    col1, col2 = st.columns(2)
     with col1:
         st.write("Record your voice message: ")
         text_from_voice = speech_to_text(
@@ -83,14 +87,12 @@ with st.container(border=True):
             kwargs={},
             key=None,
         )
-
+    with col2:
         st.write("Roll a d20")
         button_roll_d20 = st.button(label=":game_die:")
 
-    with col2:
-        img_prompt = st.text_area(label="Describe the image that you want to see:")
-        generate_image_button = st.button(label="Generate image")
-
+    img_prompt = st.text_area(label="Describe the image that you want to see:")
+    generate_image_button = st.button(label="Generate image")
     prompt = st.chat_input(placeholder="What do you want to do adventurer?")
 
 with st.container(border=True):
