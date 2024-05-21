@@ -26,7 +26,7 @@ def response_generator(chat_session: genai.ChatSession,
     response = chat_session.send_message(message)
     try:
         images_descriptions.append(response.text.split("*")[1])
-    except ValueError as _e:
+    except:
         pass
 
     for word in response.text.split("*")[0].split():

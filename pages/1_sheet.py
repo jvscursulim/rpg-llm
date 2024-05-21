@@ -4,7 +4,7 @@ import numpy as np
 import streamlit as st
 
 
-st.set_page_config(page_title="RPG GPT", page_icon=":game_die:", layout="wide")
+st.set_page_config(page_title="Role Play Gemini", page_icon=":game_die:", layout="wide")
 if "character_stats" not in st.session_state:
     st.session_state.character_stats = character_stats = {
         "strength": 0,
