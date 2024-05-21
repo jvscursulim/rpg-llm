@@ -8,18 +8,25 @@ import numpy as np
 import streamlit as st
 
 from streamlit_mic_recorder import speech_to_text
-from utils import response_generator, generate_image, GENERATION_CONFIG, SAFETY_SETTINGS, TEXT_MODEL, IMAGE_MODEL
+from utils import (
+    response_generator,
+    generate_image,
+    GENERATION_CONFIG,
+    SAFETY_SETTINGS,
+    TEXT_MODEL,
+    IMAGE_MODEL,
+)
 
 
 with open(file="secrets/google_api_key.json", mode="r") as file:
-        api_key = json.load(file)["api_key"]
+    api_key = json.load(file)["api_key"]
 
 genai.configure(api_key=api_key)
 
 model = genai.GenerativeModel(
-        model_name=TEXT_MODEL,
-        safety_settings=SAFETY_SETTINGS,
-        generation_config=GENERATION_CONFIG,
+    model_name=TEXT_MODEL,
+    safety_settings=SAFETY_SETTINGS,
+    generation_config=GENERATION_CONFIG,
 )
 
 try:
@@ -58,9 +65,9 @@ if "images_paths" not in st.session_state:
 for idx, message in enumerate(st.session_state.messages):
     if idx > 0:
         if message["role"] == "user":
-            role="user"
+            role = "user"
         else:
-            role="ai"
+            role = "ai"
         with st.chat_message(role):
             if message["parts"][-3:] == "png":
                 st.image(f"img/tmp/{message['parts']}")
@@ -85,7 +92,7 @@ with col1:
                 response_generator(
                     chat_session=chat_session,
                     message=prompt,
-                    images_descriptions=st.session_state.images_descriptions
+                    images_descriptions=st.session_state.images_descriptions,
                 )
             )
         # Add assistant response to chat history
@@ -98,22 +105,20 @@ with col1:
             img.save(f"img/tmp/{timestamp}.png")
             st.image(np.array(img))
         # Add assistant response to chat history
-        st.session_state.messages.append(
-            {"role": "model", "parts": timestamp + ".png"}
-        )
+        st.session_state.messages.append({"role": "model", "parts": timestamp + ".png"})
 
     st.write("Record your voice message: ")
     prompt = speech_to_text(
-            language='en',
-            start_prompt="🎙️",
-            stop_prompt="⏹️",
-            just_once=False,
-            use_container_width=False,
-            callback=None,
-            args=(),
-            kwargs={},
-            key=None
-        )
+        language="en",
+        start_prompt="🎙️",
+        stop_prompt="⏹️",
+        just_once=False,
+        use_container_width=False,
+        callback=None,
+        args=(),
+        kwargs={},
+        key=None,
+    )
     if prompt:
         st.session_state.messages.append({"role": "user", "parts": [prompt]})
         # Display user message in chat message container
@@ -126,7 +131,7 @@ with col1:
                 response_generator(
                     chat_session=chat_session,
                     message=prompt,
-                    images_descriptions=st.session_state.images_descriptions
+                    images_descriptions=st.session_state.images_descriptions,
                 )
             )
         # Add assistant response to chat history
@@ -139,9 +144,7 @@ with col1:
             img.save(f"img/tmp/{timestamp}.png")
             st.image(np.array(img))
         # Add assistant response to chat history
-        st.session_state.messages.append(
-            {"role": "model", "parts": timestamp + ".png"}
-        )
+        st.session_state.messages.append({"role": "model", "parts": timestamp + ".png"})
 
 with col2:
     button_roll_d20 = st.button(label="Roll d20")
@@ -162,7 +165,7 @@ with col1:
                 response_generator(
                     chat_session=chat_session,
                     message=prompt,
-                    images_descriptions=st.session_state.images_descriptions
+                    images_descriptions=st.session_state.images_descriptions,
                 )
             )
         # Add assistant response to chat history
@@ -175,9 +178,7 @@ with col1:
             img.save(f"img/tmp/{timestamp}.png")
             st.image(np.array(img))
         # Add assistant response to chat history
-        st.session_state.messages.append(
-            {"role": "model", "parts": timestamp + ".png"}
-        )
+        st.session_state.messages.append({"role": "model", "parts": timestamp + ".png"})
 
 with col2:
     img_prompt = st.text_area(label="Describe the image that you want to see:")
@@ -197,6 +198,4 @@ with col1:
             img.save(f"img/tmp/{timestamp}.png")
             st.image(np.array(img))
         # Add assistant response to chat history
-        st.session_state.messages.append(
-            {"role": "model", "parts": timestamp + ".png"}
-        )
+        st.session_state.messages.append({"role": "model", "parts": timestamp + ".png"})
