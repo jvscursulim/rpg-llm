@@ -1,7 +1,6 @@
 import os
 import torch
 
-import datetime as dt
 import google.generativeai as genai
 import numpy as np
 import streamlit as st
@@ -57,17 +56,11 @@ if "messages" not in st.session_state:
     you should to follow Dungeons and Dragons rules. When the user says something 
     that sounds like an action you must to request that the user rolls a d20 and 
     you only have to tell the result of the action after that you receive the dice result.
-    You have to be very creative and you need to describe very well the story.
-    At the end of the paragraph you have to write a summary of what you 
-    described as a prompt to be used on a text to image model, this summary must 
-    have at maximum 77 tokens and also must be between /"""
+    You have to be very creative and you need to describe very well the story."""
     st.session_state.messages.append({"role": "user", "parts": [setup_prompt]})
     initial_message = """Hello adventurer, I'm Gemini and I'll be your RPG master!
     Tell me, what kind of adventure do you want to play today?"""
     st.session_state.messages.append({"role": "model", "parts": [initial_message]})
-
-# if "images_descriptions" not in st.session_state:
-#     st.session_state.images_descriptions = []
 
 if "images_paths" not in st.session_state:
     st.session_state.images_paths = []
@@ -97,9 +90,11 @@ if st.session_state.api_key:
             st.write("Roll a d20")
             button_roll_d20 = st.button(label=":game_die:")
 
-        img_prompt = st.text_area(label="Describe the image that you want to see:")
-        generate_image_button = st.button(label="Generate image")
         prompt = st.chat_input(placeholder="What do you want to do adventurer?")
+        enable_img_generation = st.toggle(label="Actrivate image generation", value=True)
+        if enable_img_generation:
+            img_prompt = st.text_area(label="Describe the image that you want to see:")
+            generate_image_button = st.button(label="Generate image")
 
     with st.container(border=True):
 
@@ -117,20 +112,27 @@ if st.session_state.api_key:
 
         if prompt:
             process_user_input(chat_session=chat_session, prompt=prompt)
-            # img_prompt = None
-            # generate_image(model=IMAGE_MODEL, prompt=img_prompt, show_user_prompt=False)
+            if enable_img_generation:
+                prompt_summary = f"""Summary the following text using 77 tokens at maximum: {st.session_state.messages[-1]["parts"][0]}"""
+                response = chat_session.send_message(prompt_summary)
+                generate_image(model=IMAGE_MODEL, prompt=response.text, show_user_prompt=False)
+
+        if text_from_voice:
+            process_user_input(chat_session=chat_session, prompt=text_from_voice)
+            if enable_img_generation:
+                prompt_summary = f"""Summary the following text using 77 tokens at maximum: {st.session_state.messages[-1]["parts"][0]}"""
+                response = chat_session.send_message(prompt_summary)
+                generate_image(model=IMAGE_MODEL, prompt=response.text, show_user_prompt=False)
 
         if button_roll_d20:
             d20_result = np.random.randint(low=1, high=21)
             prompt = f"The result of my d20 was {d20_result}"
             process_user_input(chat_session=chat_session, prompt=prompt)
-            # img_prompt = None
-            # generate_image(model=IMAGE_MODEL, prompt=img_prompt, show_user_prompt=False)
-
-        if text_from_voice:
-            process_user_input(chat_session=chat_session, prompt=text_from_voice)
-            # img_prompt = None
-            # generate_image(model=IMAGE_MODEL, prompt=img_prompt, show_user_prompt=False)
-
-        if generate_image_button:
-            generate_image(model=IMAGE_MODEL, prompt=img_prompt, show_user_prompt=True)
+            if enable_img_generation:
+                prompt_summary = f"""Summary the following text using 77 tokens at maximum: {st.session_state.messages[-1]["parts"][0]}"""
+                response = chat_session.send_message(prompt_summary)
+                generate_image(model=IMAGE_MODEL, prompt=response.text, show_user_prompt=False)
+    
+        if enable_img_generation:
+            if generate_image_button:
+                generate_image(model=IMAGE_MODEL, prompt=img_prompt, show_user_prompt=True)

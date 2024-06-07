@@ -36,33 +36,33 @@ def generate_image(model: str, prompt: str, show_user_prompt: bool=False) -> Non
         prompt (str): A sequence of tokens that describe
         the image to be genereted
         show_user_prompt (bool): . Defaults to False.
-
     """
 
-    pipeline = DiffusionPipeline.from_pretrained(
-                model, torch_dtype=torch.float16, use_safetensors=True
-            )
-    if torch.cuda.is_available():
-        device = "cuda"
-    else:
-        device = "cpu"
-    
-    pipeline.to(device)
-    if show_user_prompt:
-        st.session_state.messages.append({"role": "user", "parts": prompt})
-    img = pipeline(prompt).images[0]
+    with st.spinner("Generating image..."):
+        pipeline = DiffusionPipeline.from_pretrained(
+                    model, torch_dtype=torch.float16, use_safetensors=True
+                )
+        if torch.cuda.is_available():
+            device = "cuda"
+        else:
+            device = "cpu"
+        
+        pipeline.to(device)
+        if show_user_prompt:
+            st.session_state.messages.append({"role": "user", "parts": prompt})
+        img = pipeline(prompt).images[0]
 
-    # Display user message in chat message container
-    if show_user_prompt:
-        with st.chat_message("user"):
-            st.markdown(prompt)
-    # Display assistant response in chat message container
-    with st.chat_message("model", avatar="ai"):
-        timestamp = dt.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-        img.save(f"img/tmp/{timestamp}.png")
-        st.image(np.array(img))
-    # Add assistant response to chat history
-    st.session_state.messages.append({"role": "model", "parts": timestamp + ".png"})
+        # Display user message in chat message container
+        if show_user_prompt:
+            with st.chat_message("user"):
+                st.markdown(prompt)
+        # Display assistant response in chat message container
+        with st.chat_message("model", avatar="ai"):
+            timestamp = dt.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+            img.save(f"img/tmp/{timestamp}.png")
+            st.image(np.array(img))
+        # Add assistant response to chat history
+        st.session_state.messages.append({"role": "model", "parts": timestamp + ".png"})
 
 def process_user_input(chat_session, prompt: str) -> None:
     """Processes user input

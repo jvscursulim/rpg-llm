@@ -1,12 +1,20 @@
 import json
 import os
+
+import google.generativeai as genai
 import numpy as np
 import streamlit as st
 
+from utils import (
+    response_generator,
+    GENERATION_CONFIG,
+    SAFETY_SETTINGS,
+    TEXT_MODEL,
+)
 
 st.set_page_config(page_title="Role Play Gemini", page_icon=":game_die:", layout="wide")
 if "character_stats" not in st.session_state:
-    st.session_state.character_stats = character_stats = {
+    st.session_state.character_stats = {
         "strength": 0,
         "dexterity": 0,
         "constitution": 0,
@@ -15,10 +23,59 @@ if "character_stats" not in st.session_state:
         "charisma": 0,
     }
 
+if "api_key" not in st.session_state:
+    st.session_state.api_key = None
+
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+
 st.title(":pencil: RPG Sheet :game_die:")
 st.divider()
 
+with st.sidebar:
+    api_key = st.text_input(label="Insert your Gemini API key here", type="password")
+    if api_key:
+        st.session_state.api_key = api_key
+
+if st.session_state.api_key:
+    genai.configure(api_key=st.session_state.api_key)
+
+    model = genai.GenerativeModel(
+        model_name=TEXT_MODEL,
+        safety_settings=SAFETY_SETTINGS,
+        generation_config=GENERATION_CONFIG,
+    )
+else:
+    with st.sidebar:
+        st.warning(body="You must provide a Gemini API key!")
+
+if st.session_state.api_key:
+    chat_session = model.start_chat(history=st.session_state.chat_history)
+
+    with st.sidebar:
+        st.divider()
+
+        messages = st.container(border=True)
+
+        for idx, message in enumerate(st.session_state.chat_history):
+            if idx > 0:
+                if message["role"] == "user":
+                    role = "user"
+                else:
+                    role = "ai"
+                messages.chat_message(role).write(message["parts"][0])
+
+        if prompt := st.chat_input(placeholder="Your message"):
+            st.session_state.chat_history.append({"role": "user", "parts": [prompt]})
+            messages.chat_message("user").write(prompt)
+            response = messages.chat_message("assistant").write_stream(response_generator(
+                                    chat_session=chat_session,
+                                    message=prompt,
+                                ))
+            st.session_state.chat_history.append({"role": "model", "parts": [response]})
+
 col1, col2 = st.columns(2)
+
 with col1:
     character_name = st.text_input(label="Character name: ")
     race = st.text_input(label="Race: ")
