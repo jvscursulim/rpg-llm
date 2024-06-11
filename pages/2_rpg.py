@@ -6,7 +6,6 @@ try:
 except ImportError as _:
     torch_not_present = True
 
-import google.generativeai as genai
 import numpy as np
 import streamlit as st
 
@@ -15,9 +14,6 @@ from utils import (
     configure_model,
     generate_image,
     process_user_input,
-    GENERATION_CONFIG,
-    SAFETY_SETTINGS,
-    TEXT_MODEL,
     IMAGE_MODEL,
     set_api_key,
 )
