@@ -44,7 +44,7 @@ def generate_image(model: str, prompt: str, show_user_prompt: bool = False) -> N
     """
     if torch_not_present:
         st.markdown(
-            "You should install torch and diffusers if you want to generate images"
+            ":red[You should install torch and diffusers if you want to generate images]"
         )
         return
 
