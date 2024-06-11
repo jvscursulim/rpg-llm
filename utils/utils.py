@@ -1,15 +1,19 @@
 import time
-import torch
+
+try:
+    import torch
+    from diffusers import DiffusionPipeline
+
+except ImportError as _:
+    torch_not_present = True
 
 import datetime as dt
 import google.generativeai as genai
 import numpy as np
 import streamlit as st
 
-from diffusers import DiffusionPipeline
 
-def response_generator(chat_session: genai.ChatSession,
-                       message: dict):
+def response_generator(chat_session: genai.ChatSession, message: dict):
     """Creates a stream effect in the responde of
     the LLM.
 
@@ -21,14 +25,15 @@ def response_generator(chat_session: genai.ChatSession,
     Yields:
         str: Generate the characteres of the LLM response.
     """
-    
+
     response = chat_session.send_message(message)
 
     for word in response.text.split(" "):
         yield word + " "
         time.sleep(0.05)
 
-def generate_image(model: str, prompt: str, show_user_prompt: bool=False) -> None:
+
+def generate_image(model: str, prompt: str, show_user_prompt: bool = False) -> None:
     """Generates an image from a user prompt.
 
     Args:
@@ -37,16 +42,22 @@ def generate_image(model: str, prompt: str, show_user_prompt: bool=False) -> Non
         the image to be genereted
         show_user_prompt (bool): . Defaults to False.
     """
+    if torch_not_present:
+        st.markdown(
+            "You should install torch and diffusers if you want to generate images"
+        )
+        return
 
     with st.spinner("Generating image..."):
         pipeline = DiffusionPipeline.from_pretrained(
-                    model, torch_dtype=torch.float16, use_safetensors=True
-                )
+            model, torch_dtype=torch.float16, use_safetensors=True
+        )
         if torch.cuda.is_available():
             device = "cuda"
+
         else:
             device = "cpu"
-        
+
         pipeline.to(device)
         if show_user_prompt:
             st.session_state.messages.append({"role": "user", "parts": prompt})
@@ -63,6 +74,7 @@ def generate_image(model: str, prompt: str, show_user_prompt: bool=False) -> Non
             st.image(np.array(img))
         # Add assistant response to chat history
         st.session_state.messages.append({"role": "model", "parts": timestamp + ".png"})
+
 
 def process_user_input(chat_session, prompt: str) -> None:
     """Processes user input
