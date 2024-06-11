@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 try:
@@ -13,12 +12,14 @@ import streamlit as st
 
 from streamlit_mic_recorder import speech_to_text
 from utils import (
+    configure_model,
     generate_image,
     process_user_input,
     GENERATION_CONFIG,
     SAFETY_SETTINGS,
     TEXT_MODEL,
     IMAGE_MODEL,
+    set_api_key,
 )
 
 _ = Path("img/tmp").mkdir(parents=True, exist_ok=True)
@@ -37,21 +38,9 @@ if "api_key" not in st.session_state:
     st.session_state.api_key = None
 
 with st.sidebar:
-    api_key = st.text_input(label="Insert your Gemini API key here", type="password")
-    if api_key:
-        st.session_state.api_key = api_key
+    set_api_key(st.session_state)
 
-if st.session_state.api_key:
-    genai.configure(api_key=st.session_state.api_key)
-
-    model = genai.GenerativeModel(
-        model_name=TEXT_MODEL,
-        safety_settings=SAFETY_SETTINGS,
-        generation_config=GENERATION_CONFIG,
-    )
-else:
-    with st.sidebar:
-        st.warning(body="You must provide a Gemini API key!")
+model = configure_model(st.session_state)
 
 
 if "messages" not in st.session_state:
@@ -71,7 +60,7 @@ if "images_paths" not in st.session_state:
 
 st.title(":crossed_swords: :male_mage: Role Play Gemini :elf: :game_die:")
 
-if st.session_state.api_key:
+if model:
     chat_session = model.start_chat(history=st.session_state.messages)
 
     with st.sidebar:
