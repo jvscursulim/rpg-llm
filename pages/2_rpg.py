@@ -1,31 +1,34 @@
-import os
-import torch
+from pathlib import Path
 
-import google.generativeai as genai
+try:
+    import torch
+
+    torch_not_present = False
+
+except ImportError as _:
+    torch_not_present = True
+
 import numpy as np
 import streamlit as st
 
 from streamlit_mic_recorder import speech_to_text
 from utils import (
+    configure_model,
     generate_image,
     process_user_input,
-    GENERATION_CONFIG,
-    SAFETY_SETTINGS,
-    TEXT_MODEL,
     IMAGE_MODEL,
+    set_api_key,
 )
 
-try:
-    os.makedirs("img/tmp", exist_ok=True)
-except ValueError as _e:
-    pass
+_ = Path("img/tmp").mkdir(parents=True, exist_ok=True)
 
-if not torch.cuda.is_available():
-    st.warning(
-        body="""A GPU was not detected by Pytorch! This implies that your PC will 
-        take more time to produce images through stable diffusion model. 
-        We recommend that users without NVIDIA GPU don't use image generation."""
-    )
+if not torch_not_present:
+    if not torch.cuda.is_available():
+        st.warning(
+            body="""A GPU was not detected by Pytorch! This implies that your PC will 
+            take more time to produce images through stable diffusion model. 
+            We recommend that users without NVIDIA GPU don't use image generation."""
+        )
 
 st.set_page_config(page_title="Role Play Gemini", page_icon=":game_die:", layout="wide")
 
@@ -33,21 +36,9 @@ if "api_key" not in st.session_state:
     st.session_state.api_key = None
 
 with st.sidebar:
-    api_key = st.text_input(label="Insert your Gemini API key here", type="password")
-    if api_key:
-        st.session_state.api_key = api_key
+    set_api_key(st.session_state)
 
-if st.session_state.api_key:
-    genai.configure(api_key=st.session_state.api_key)
-
-    model = genai.GenerativeModel(
-        model_name=TEXT_MODEL,
-        safety_settings=SAFETY_SETTINGS,
-        generation_config=GENERATION_CONFIG,
-    )
-else:
-    with st.sidebar:
-        st.warning(body="You must provide a Gemini API key!")
+model = configure_model(st.session_state)
 
 
 if "messages" not in st.session_state:
@@ -67,7 +58,7 @@ if "images_paths" not in st.session_state:
 
 st.title(":crossed_swords: :male_mage: Role Play Gemini :elf: :game_die:")
 
-if st.session_state.api_key:
+if model:
     chat_session = model.start_chat(history=st.session_state.messages)
 
     with st.sidebar:
@@ -91,7 +82,7 @@ if st.session_state.api_key:
             button_roll_d20 = st.button(label=":game_die:")
 
         prompt = st.chat_input(placeholder="What do you want to do adventurer?")
-        enable_img_generation = st.toggle(label="Actrivate image generation", value=True)
+        enable_img_generation = st.toggle(label="Activate image generation", value=True)
         if enable_img_generation:
             img_prompt = st.text_area(label="Describe the image that you want to see:")
             generate_image_button = st.button(label="Generate image")
@@ -115,14 +106,18 @@ if st.session_state.api_key:
             if enable_img_generation:
                 prompt_summary = f"""Summary the following text using 77 tokens at maximum: {st.session_state.messages[-1]["parts"][0]}"""
                 response = chat_session.send_message(prompt_summary)
-                generate_image(model=IMAGE_MODEL, prompt=response.text, show_user_prompt=False)
+                generate_image(
+                    model=IMAGE_MODEL, prompt=response.text, show_user_prompt=False
+                )
 
         if text_from_voice:
             process_user_input(chat_session=chat_session, prompt=text_from_voice)
             if enable_img_generation:
                 prompt_summary = f"""Summary the following text using 77 tokens at maximum: {st.session_state.messages[-1]["parts"][0]}"""
                 response = chat_session.send_message(prompt_summary)
-                generate_image(model=IMAGE_MODEL, prompt=response.text, show_user_prompt=False)
+                generate_image(
+                    model=IMAGE_MODEL, prompt=response.text, show_user_prompt=False
+                )
 
         if button_roll_d20:
             d20_result = np.random.randint(low=1, high=21)
@@ -131,8 +126,12 @@ if st.session_state.api_key:
             if enable_img_generation:
                 prompt_summary = f"""Summary the following text using 77 tokens at maximum: {st.session_state.messages[-1]["parts"][0]}"""
                 response = chat_session.send_message(prompt_summary)
-                generate_image(model=IMAGE_MODEL, prompt=response.text, show_user_prompt=False)
-    
+                generate_image(
+                    model=IMAGE_MODEL, prompt=response.text, show_user_prompt=False
+                )
+
         if enable_img_generation:
             if generate_image_button:
-                generate_image(model=IMAGE_MODEL, prompt=img_prompt, show_user_prompt=True)
+                generate_image(
+                    model=IMAGE_MODEL, prompt=img_prompt, show_user_prompt=True
+                )
