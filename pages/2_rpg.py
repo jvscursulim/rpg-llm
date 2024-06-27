@@ -2,7 +2,6 @@ from pathlib import Path
 
 try:
     import torch
-
     torch_not_present = False
 
 except ImportError as _:
@@ -70,7 +69,7 @@ if model:
                 language="en",
                 start_prompt="🎙️",
                 stop_prompt="⏹️",
-                just_once=False,
+                just_once=True,
                 use_container_width=False,
                 callback=None,
                 args=(),
@@ -101,17 +100,11 @@ if model:
                     else:
                         st.markdown(message["parts"][0])
 
-        if prompt:
-            process_user_input(chat_session=chat_session, prompt=prompt)
-            if enable_img_generation:
-                prompt_summary = f"""Summary the following text using 77 tokens at maximum: {st.session_state.messages[-1]["parts"][0]}"""
-                response = chat_session.send_message(prompt_summary)
-                generate_image(
-                    model=IMAGE_MODEL, prompt=response.text, show_user_prompt=False
-                )
-
-        if text_from_voice:
-            process_user_input(chat_session=chat_session, prompt=text_from_voice)
+        if prompt or text_from_voice:
+            if prompt:
+                process_user_input(chat_session=chat_session, prompt=prompt)
+            elif text_from_voice:
+                process_user_input(chat_session=chat_session, prompt=text_from_voice)
             if enable_img_generation:
                 prompt_summary = f"""Summary the following text using 77 tokens at maximum: {st.session_state.messages[-1]["parts"][0]}"""
                 response = chat_session.send_message(prompt_summary)
@@ -120,6 +113,8 @@ if model:
                 )
 
         if button_roll_d20:
+            with st.chat_message("user"):
+                st.audio("audio/dice_roll_sound.m4a", format="audio/mpeg", loop=False, autoplay=True)
             d20_result = np.random.randint(low=1, high=21)
             prompt = f"The result of my d20 was {d20_result}"
             process_user_input(chat_session=chat_session, prompt=prompt)

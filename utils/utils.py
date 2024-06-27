@@ -98,7 +98,7 @@ def process_user_input(chat_session, prompt: str) -> None:
         response = st.write_stream(
             response_generator(
                 chat_session=chat_session,
-                message=prompt,
+                message=st.session_state.messages[-1],
             )
         )
     # Add assistant response to chat history
