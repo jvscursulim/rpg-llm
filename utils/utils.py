@@ -4,6 +4,8 @@ try:
     import torch
     from diffusers import DiffusionPipeline
 
+    torch_not_present = False
+
 except ImportError as _:
     torch_not_present = True
 

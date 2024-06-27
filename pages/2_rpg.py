@@ -3,6 +3,8 @@ from pathlib import Path
 try:
     import torch
 
+    torch_not_present = False
+
 except ImportError as _:
     torch_not_present = True
 
