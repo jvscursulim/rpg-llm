@@ -2,11 +2,13 @@ from pathlib import Path
 
 try:
     import torch
+
     torch_not_present = False
 
 except ImportError as _:
     torch_not_present = True
 
+import json
 import numpy as np
 import streamlit as st
 
@@ -61,7 +63,41 @@ if model:
     chat_session = model.start_chat(history=st.session_state.messages)
 
     with st.sidebar:
-        st.divider()
+        with st.expander(label="Choose a character:"):
+            try:
+                options = [
+                    str(path) for path in Path("characters").glob("*") if path.is_dir()
+                ]
+
+                character = st.selectbox(label="Character", options=options)
+
+                with open(file=f"{character}/character_sheet.json", mode="r") as f:
+                    character_sheet = json.load(f)
+
+                prompt_character = f"""My character name is {character_sheet['name']}. My character is a {character_sheet['gender']} {character_sheet['race']} {character_sheet['classe']}.\n
+                Character stats:\n
+                HP: {character_sheet['hp']}\n
+                Armor class: {character_sheet['ca']}\n
+                Strength: {character_sheet['stats']['strength']} (modifier {character_sheet['stats']['strength_modifier']})\n
+                Dexterity: {character_sheet['stats']['dexterity']} (modifier {character_sheet['stats']['dexterity_modifier']})\n
+                Constitution: {character_sheet['stats']['constitution']} (modifier {character_sheet['stats']['constitution_modifier']})\n
+                Intelligence: {character_sheet['stats']['intelligence']} (modifier {character_sheet['stats']['intelligence_modifier']})\n
+                Wisdom: {character_sheet['stats']['wisdom']} (modifier {character_sheet['stats']['wisdom_modifier']})\n
+                Charisma: {character_sheet['stats']['charisma']} (modifier {character_sheet['stats']['charisma_modifier']})\n
+                Background story: {character_sheet['background']}
+                """
+                char_button = st.button(label="Use this character")
+            except:
+                st.warning("There is no character created!")
+        enable_img_generation = st.toggle(
+            label="Activate image generation", value=False
+        )
+        if enable_img_generation:
+            with st.expander(label="Image generation"):
+                img_prompt = st.text_area(
+                    label="Describe the image that you want to generate:"
+                )
+                generate_image_button = st.button(label="Generate image")
         col1, col2 = st.columns(2)
         with col1:
             st.write("Record your voice message: ")
@@ -81,10 +117,6 @@ if model:
             button_roll_d20 = st.button(label=":game_die:")
 
         prompt = st.chat_input(placeholder="What do you want to do adventurer?")
-        enable_img_generation = st.toggle(label="Activate image generation", value=True)
-        if enable_img_generation:
-            img_prompt = st.text_area(label="Describe the image that you want to see:")
-            generate_image_button = st.button(label="Generate image")
 
     with st.container(border=True):
 
@@ -112,9 +144,23 @@ if model:
                     model=IMAGE_MODEL, prompt=response.text, show_user_prompt=False
                 )
 
+        if char_button:
+            process_user_input(chat_session=chat_session, prompt=prompt_character)
+            if enable_img_generation:
+                prompt_summary = f"""Summary the following text using 77 tokens at maximum: {st.session_state.messages[-1]["parts"][0]}"""
+                response = chat_session.send_message(prompt_summary)
+                generate_image(
+                    model=IMAGE_MODEL, prompt=response.text, show_user_prompt=False
+                )
+
         if button_roll_d20:
             with st.chat_message("user"):
-                st.audio("audio/dice_roll_sound.m4a", format="audio/mpeg", loop=False, autoplay=True)
+                st.audio(
+                    "audio/dice_roll_sound.m4a",
+                    format="audio/mpeg",
+                    loop=False,
+                    autoplay=True,
+                )
             d20_result = np.random.randint(low=1, high=21)
             prompt = f"The result of my d20 was {d20_result}"
             process_user_input(chat_session=chat_session, prompt=prompt)

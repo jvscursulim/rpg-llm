@@ -31,7 +31,6 @@ if model:
     chat_session = model.start_chat(history=st.session_state.chat_history)
 
     with st.sidebar:
-        st.divider()
 
         messages = st.container(border=True)
 
@@ -43,6 +42,7 @@ if model:
                     role = "ai"
                 messages.chat_message(role).write(message["parts"][0])
 
+        st.write("Interact with Gemini")
         if prompt := st.chat_input(placeholder="Your message"):
             st.session_state.chat_history.append({"role": "user", "parts": [prompt]})
             messages.chat_message("user").write(prompt)
@@ -59,6 +59,7 @@ col1, col2 = st.columns(2)
 with col1:
     character_name = st.text_input(label="Name: ")
     race = st.text_input(label="Race: ")
+    gender = st.text_input(label="Gender: ")
     character_class = st.text_input(label="Class: ")
     background = st.text_area(label="Background: ")
     save_button = st.button(label="Save character")
@@ -149,6 +150,7 @@ try:
             char = Character(
                 name=character_name,
                 race=race,
+                gender=gender,
                 classe=character_class,
                 background=background,
                 hp=hp,

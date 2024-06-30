@@ -25,43 +25,43 @@ try:
     with col1:
         st.write(f"Name: {character_sheet['name']}")
         st.write(f"Race: {character_sheet['race']}")
+        st.write(f"Gender: {character_sheet['gender']}")
         st.write(f"Class: {character_sheet['classe']}")
         st.write(f"Background: {character_sheet['background']}")
 
     with col2:
         col3, col4 = st.columns([0.2, 0.8])
         with col3:
-                strength = st.metric(
-                    label=":mechanical_arm: Strength (STR): ",
-                    value=character_sheet['stats']['strength'],
-                    delta=character_sheet['stats']['strength_modifier'],
-                )
-                dexterity = st.metric(
-                    label=":running: Dexterity (DEX): ",
-                    value=character_sheet['stats']['dexterity'],
-                    delta=character_sheet['stats']['dexterity_modifier'],
-                )
-                constitution = st.metric(
-                    label=":blue_heart: Constitution (CON): ",
-                    value=character_sheet['stats']['constitution'],
-                    delta=character_sheet['stats']['constitution_modifier'],
-                )
+            strength = st.metric(
+                label=":mechanical_arm: Strength (STR): ",
+                value=character_sheet["stats"]["strength"],
+                delta=character_sheet["stats"]["strength_modifier"],
+            )
+            dexterity = st.metric(
+                label=":running: Dexterity (DEX): ",
+                value=character_sheet["stats"]["dexterity"],
+                delta=character_sheet["stats"]["dexterity_modifier"],
+            )
+            constitution = st.metric(
+                label=":blue_heart: Constitution (CON): ",
+                value=character_sheet["stats"]["constitution"],
+                delta=character_sheet["stats"]["constitution_modifier"],
+            )
         with col4:
             intelligence = st.metric(
                 label=":brain: Intelligence (INT): ",
-                value=character_sheet['stats']['intelligence'],
-                delta=character_sheet['stats']['intelligence_modifier'],
+                value=character_sheet["stats"]["intelligence"],
+                delta=character_sheet["stats"]["intelligence_modifier"],
             )
             wisdom = st.metric(
                 label=":book: Wisdom (WIS): ",
-                value=character_sheet['stats']['wisdom'],
-                delta=character_sheet['stats']['wisdom_modifier'],
+                value=character_sheet["stats"]["wisdom"],
+                delta=character_sheet["stats"]["wisdom_modifier"],
             )
             charisma = st.metric(
                 label=":performing_arts: Charisma (CHA): ",
-                value=character_sheet['stats']['charisma'],
-                delta=character_sheet['stats']['charisma_modifier'],
+                value=character_sheet["stats"]["charisma"],
+                delta=character_sheet["stats"]["charisma_modifier"],
             )
 except:
-     st.warning("There is no character created!")
-
+    st.warning("There is no character created!")
