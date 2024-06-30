@@ -4,6 +4,7 @@ from pydantic import ValidationError
 
 from schemas.character import Character
 from pathlib import Path
+import numpy as np
 import streamlit as st
 
 from utils import (
@@ -56,68 +57,116 @@ if model:
 col1, col2 = st.columns(2)
 
 with col1:
-    character_name = st.text_input(label="Character name: ")
+    character_name = st.text_input(label="Name: ")
     race = st.text_input(label="Race: ")
     character_class = st.text_input(label="Class: ")
     background = st.text_area(label="Background: ")
     save_button = st.button(label="Save character")
 
 with col2:
-    hp = st.number_input(label="Max HP: ", step=1)
-    armor_class = st.number_input(label="Armor class: ", step=1)
-    button_roll_dice = st.button(label="Roll 6 d20 for stats")
-
-    if button_roll_dice:
-        st.session_state.character_stats.generate_stats()
-
+    stats_options = [
+        "Strength",
+        "Dexterity",
+        "Constitution",
+        "Intelligence",
+        "Wisdom",
+        "Charisma",
+    ]
+    option = st.selectbox(label="Stats", options=stats_options)
+    number = st.number_input(label="Points", min_value=8, max_value=15, step=1)
     col3, col4 = st.columns(2)
 
     with col3:
+        st.metric(
+            label="Points available on budget:", value=st.session_state.points_budget
+        )
+    with col4:
+        with st.expander("Cost table"):
+            for p, cp in st.session_state.cost_table.items():
+                st.write(f"{p}: {cp} points")
+
+    assigment_button = st.button(label="Assign stats value")
+
+    if assigment_button:
+        if option == "Strength":
+            st.session_state.character_stats.strength = number
+        elif option == "Dexterity":
+            st.session_state.character_stats.dexterity = number
+        elif option == "Constitution":
+            st.session_state.character_stats.constitution = number
+        elif option == "Intelligence":
+            st.session_state.character_stats.intelligence = number
+        elif option == "Wisdom":
+            st.session_state.character_stats.wisdom = number
+        elif option == "Charisma":
+            st.session_state.character_stats.charisma = number
+        st.session_state.points_budget = (
+            st.session_state.points_budget - st.session_state.cost_table[number]
+        )
+
+    col5, col6 = st.columns(2)
+
+    with col5:
         strength = st.metric(
             label=":mechanical_arm: Strength (STR): ",
             value=st.session_state.character_stats.strength,
+            delta=np.floor((st.session_state.character_stats.strength - 10) / 2),
         )
         dexterity = st.metric(
             label=":running: Dexterity (DEX): ",
             value=st.session_state.character_stats.dexterity,
+            delta=np.floor((st.session_state.character_stats.dexterity - 10) / 2),
         )
         constitution = st.metric(
             label=":blue_heart: Constitution (CON): ",
             value=st.session_state.character_stats.constitution,
+            delta=np.floor((st.session_state.character_stats.constitution - 10) / 2),
         )
-    with col4:
+    with col6:
         intelligence = st.metric(
             label=":brain: Intelligence (INT): ",
             value=st.session_state.character_stats.intelligence,
+            delta=np.floor((st.session_state.character_stats.intelligence - 10) / 2),
         )
         wisdom = st.metric(
             label=":book: Wisdom (WIS): ",
             value=st.session_state.character_stats.wisdom,
+            delta=np.floor((st.session_state.character_stats.wisdom - 10) / 2),
         )
         charisma = st.metric(
             label=":performing_arts: Charisma (CHA): ",
             value=st.session_state.character_stats.charisma,
+            delta=np.floor((st.session_state.character_stats.charisma - 10) / 2),
         )
 
 try:
     if save_button:
-        char = Character(
-            name=character_name,
-            race=race,
-            classe=character_class,
-            background=background,
-            hp=int(hp),
-            ca=int(armor_class),
-            stats=st.session_state.character_stats.model_dump(),  # type: ignore
-        )
+        if st.session_state.points_budget >= 0:
 
-        save_path = Path("characters") / character_name
-        save_path.mkdir(parents=True, exist_ok=True)
+            st.session_state.character_stats.calculate_stats_modifiers()
+            hp = 10 + st.session_state.character_stats.constitution_modifier
+            armor_class = 10 + st.session_state.character_stats.dexterity_modifier
+            char = Character(
+                name=character_name,
+                race=race,
+                classe=character_class,
+                background=background,
+                hp=hp,
+                ca=armor_class,
+                stats=st.session_state.character_stats.model_dump(),  # type: ignore
+            )
 
-        with open(save_path / "character_sheet.json", "w") as file:
-            json.dump(char.model_dump(), file, indent=4)
+            save_path = Path("characters") / character_name
+            save_path.mkdir(parents=True, exist_ok=True)
 
-        st.success(body="Character saved with success!")
+            with open(save_path / "character_sheet.json", "w") as file:
+                json.dump(char.model_dump(), file, indent=4)
+
+            st.success(body="Character saved with success!")
+        else:
+            st.warning(
+                body="You can't save the character! That's because your stats assignment overcome the budget."
+            )
 
 except ValidationError as e:
     error_msg = ""

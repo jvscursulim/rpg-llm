@@ -17,6 +17,16 @@ def initialize_session_variables(session_state: Any) -> None:
     if "chat_history" not in session_state:
         session_state.chat_history = []
 
+    if "points_budget" not in session_state:
+        session_state.points_budget = 29
+
+    if "cost_table" not in session_state:
+        points = [*range(8, 16)]
+        cost_points = [*range(0, 8)]
+        cost_points[-1] = cost_points[-1] + 2
+        cost_points[-2] = cost_points[-2] + 1
+        session_state.cost_table = {p: cp for p, cp in zip(points, cost_points)}
+
 
 def configure_model(session_state: Any) -> Optional[Any]:
     if not session_state.api_key:
