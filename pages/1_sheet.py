@@ -101,9 +101,12 @@ with col2:
             st.session_state.character_stats.wisdom = number
         elif option == "Charisma":
             st.session_state.character_stats.charisma = number
-        st.session_state.points_budget = (
-            st.session_state.points_budget - st.session_state.cost_table[number]
-        )
+        if st.session_state.points_budget - st.session_state.cost_table[number] < 0:
+            st.warning("You spent more points than you have in the budget!")
+        else:
+            st.session_state.points_budget = (
+                st.session_state.points_budget - st.session_state.cost_table[number]
+            )
 
     col5, col6 = st.columns(2)
 
@@ -111,33 +114,57 @@ with col2:
         strength = st.metric(
             label=":mechanical_arm: Strength (STR): ",
             value=st.session_state.character_stats.strength,
-            delta=np.floor((st.session_state.character_stats.strength - 10) / 2),
+            delta=(
+                np.floor((st.session_state.character_stats.strength - 10) / 2)
+                if st.session_state.character_stats.strength > 0
+                else 0
+            ),
         )
         dexterity = st.metric(
             label=":running: Dexterity (DEX): ",
             value=st.session_state.character_stats.dexterity,
-            delta=np.floor((st.session_state.character_stats.dexterity - 10) / 2),
+            delta=(
+                np.floor((st.session_state.character_stats.dexterity - 10) / 2)
+                if st.session_state.character_stats.dexterity > 0
+                else 0
+            ),
         )
         constitution = st.metric(
             label=":blue_heart: Constitution (CON): ",
             value=st.session_state.character_stats.constitution,
-            delta=np.floor((st.session_state.character_stats.constitution - 10) / 2),
+            delta=(
+                np.floor((st.session_state.character_stats.constitution - 10) / 2)
+                if st.session_state.character_stats.constitution > 0
+                else 0
+            ),
         )
     with col6:
         intelligence = st.metric(
             label=":brain: Intelligence (INT): ",
             value=st.session_state.character_stats.intelligence,
-            delta=np.floor((st.session_state.character_stats.intelligence - 10) / 2),
+            delta=(
+                np.floor((st.session_state.character_stats.intelligence - 10) / 2)
+                if st.session_state.character_stats.intelligence > 0
+                else 0
+            ),
         )
         wisdom = st.metric(
             label=":book: Wisdom (WIS): ",
             value=st.session_state.character_stats.wisdom,
-            delta=np.floor((st.session_state.character_stats.wisdom - 10) / 2),
+            delta=(
+                np.floor((st.session_state.character_stats.wisdom - 10) / 2)
+                if st.session_state.character_stats.wisdom > 0
+                else 0
+            ),
         )
         charisma = st.metric(
             label=":performing_arts: Charisma (CHA): ",
             value=st.session_state.character_stats.charisma,
-            delta=np.floor((st.session_state.character_stats.charisma - 10) / 2),
+            delta=(
+                np.floor((st.session_state.character_stats.charisma - 10) / 2)
+                if st.session_state.character_stats.charisma > 0
+                else 0
+            ),
         )
 
 try:
