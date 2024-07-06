@@ -117,6 +117,29 @@ if model:
             button_roll_d20 = st.button(label=":game_die:")
 
         prompt = st.chat_input(placeholder="What do you want to do adventurer?")
+        with st.expander(label="Save or load adventures:"):
+            filename = st.text_input(label="Filename:")
+            save_button = st.button(label="Save")
+            try:
+                options_list = [str(path) for path in Path("adventures").glob("*.json") if path.is_file()]
+                adv_option = st.selectbox(label="Choose an adventure", options=options_list)
+            except:
+                st.warning("There is no adventure saved!")
+            load_button = st.button(label="Load")
+            if save_button:
+                save_path = Path("adventures")
+                save_path.mkdir(parents=True, exist_ok=True)
+
+                with open(save_path / f"{filename}.json", "w") as file:
+                    json.dump(st.session_state.messages, file, indent=4)
+
+                st.success(body="Adventure saved with success!")
+            if load_button:
+                with open(file=f"{adv_option}", mode="r") as f:
+                    adventure = json.load(f)
+                
+                st.session_state.messages = adventure
+                st.success(body="Adventure loaded with success!")
 
     with st.container(border=True):
 

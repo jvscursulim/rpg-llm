@@ -86,7 +86,12 @@ with col2:
             for p, cp in st.session_state.cost_table.items():
                 st.write(f"{p}: {cp} points")
 
-    assigment_button = st.button(label="Assign stats value")
+    col5, col6 = st.columns(2)
+
+    with col5:
+        assigment_button = st.button(label="Assign stats value")
+    with col6:
+        reset_button = st.button(label="Reset stats")
 
     if assigment_button:
         if option == "Strength":
@@ -108,9 +113,17 @@ with col2:
                 st.session_state.points_budget - st.session_state.cost_table[number]
             )
 
-    col5, col6 = st.columns(2)
+    if reset_button:
+        st.session_state.character_stats.strength = 0
+        st.session_state.character_stats.dexterity = 0
+        st.session_state.character_stats.constitution = 0
+        st.session_state.character_stats.intelligence = 0
+        st.session_state.character_stats.wisdom = 0
+        st.session_state.character_stats.charisma = 0
 
-    with col5:
+    col7, col8 = st.columns(2)
+
+    with col7:
         strength = st.metric(
             label=":mechanical_arm: Strength (STR): ",
             value=st.session_state.character_stats.strength,
@@ -138,7 +151,7 @@ with col2:
                 else 0
             ),
         )
-    with col6:
+    with col8:
         intelligence = st.metric(
             label=":brain: Intelligence (INT): ",
             value=st.session_state.character_stats.intelligence,
