@@ -1,4 +1,4 @@
-# RPG GPT
+# RPG LLM
 
 ![image](img/rpg_game.jpeg)
 
@@ -10,7 +10,7 @@ This project has the goal of create a LLM model specialized to be a RPG master, 
 
 * Step 1: Clone this repository
 ```bash
-git clone https://github.com/jvscursulim/rpggpt
+git clone https://github.com/jvscursulim/rpg-llm
 ```
 
 * Step 2: Install miniconda (https://docs.anaconda.com/free/miniconda/index.html)
@@ -34,14 +34,8 @@ conda install -c conda-forge cudatoolkit==11.8.0
 ```bash
 conda install -c conda-forge cudnn==8.9.7.29
 ```
-* Step 6: Download Ollama (https://ollama.com/)
 
-* Step 7: Install llama3 model
-```bash
-ollama pull llama3
-```
-
-* Step 8: Install project dependencies
+* Step 6: Install project dependencies
 ```bash
 pip install -r requirements.txt
 ```
@@ -49,14 +43,15 @@ Observation: If you don't have a NVIDIA GPU, you will need to install Pytorch fo
 
 ## How to use
 
-* Step 1: Activate your python environment where you installed the project dependencies and access the folder where you find `rpggpt.py` file and run the following command 
+* Step 1: Activate your python environment where you installed the project dependencies and access the folder where you find `home.py` file and run the following command 
 ```bash
-streamlit run rpggpt.py
+streamlit run home.py
 ```
 After this you will be redirected to a new tab on your browser where you will be able to interact with the RPG GPT.
 
-![image](img/print1.jpg)
-![image](img/print2.jpg)
-![image](img/print3.jpg)
+![image](img/print_home.jpg)
+![image](img/print_rpg_sheet.jpg)
+![image](img/print_characters.jpg)
+![image](img/print_rpg.jpg)
 
 
