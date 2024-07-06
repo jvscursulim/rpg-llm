@@ -2,7 +2,7 @@ import streamlit as st
 
 st.set_page_config(page_title="Role Play Gemini", page_icon=":game_die:", layout="wide")
 
-st.title(":dragon: Role Play Gemini - Homepage :male_mage:")
+st.title(":dragon: Role Play Gemini :male_mage:")
 st.divider()
 
 st.markdown(
