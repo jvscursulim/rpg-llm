@@ -120,6 +120,7 @@ with col2:
         st.session_state.character_stats.intelligence = 0
         st.session_state.character_stats.wisdom = 0
         st.session_state.character_stats.charisma = 0
+        st.session_state.points_budget = 29
 
     col7, col8 = st.columns(2)
 
