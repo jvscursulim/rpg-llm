@@ -1,4 +1,4 @@
-TEXT_MODEL = "gemini-1.5-pro-latest"
+TEXT_MODEL = "gemini-1.5-flash"
 IMAGE_MODEL = "runwayml/stable-diffusion-v1-5"
 
 GENERATION_CONFIG = {

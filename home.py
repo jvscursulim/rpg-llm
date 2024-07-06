@@ -17,9 +17,15 @@ But that's not all! **Role Play Gemini brings your adventures to life with stunn
 * **Infinite Possibilities:** Choose from a multitude of genres, settings, and playstyles, or create your own unique universe. 
 * **AI-Powered Storytelling:** Gemini weaves compelling narratives, adapts to your choices, and keeps you on the edge of your seat.
 * **Immersive Visuals:** Experience your adventure in a whole new way with AI-generated images that bring Gemini's descriptions to life. 
-* **Solo or Collaborative:**  Play solo or invite friends to join your adventure, with Gemini seamlessly managing the experience for everyone.
 * **Voice-Activated Gameplay:**  Dive even deeper into the world of your adventure using voice commands to interact with Gemini and direct your character.
 * **Easy to Use:** No complicated rules or setup—just jump in and start playing! 
+
+Now the adventure goes even deeper. Introducing your personal AI companion, always by your side, ready to enhance your Role Play Gemini experience in amazing ways.
+
+**Imagine this:**
+* **A loyal party member crafted by YOU:** Design your ideal companion - a wise mage, a courageous warrior, or perhaps a mischievous rogue - with unique skills and a personality all their own.
+* **Deeper immersion and dynamic storytelling:** Your AI companion interacts with the world alongside you, offering advice, engaging in witty banter, and even surprising you with their own actions, creating a truly collaborative storytelling experience.
+* **Never adventure alone:** Whether you're embarking on solo campaigns or joining forces with friends, your AI companion is there to enrich the journey, providing support, companionship, and endless possibilities for exciting interactions.
 
 **Role Play Gemini is your portal to endless RPG adventures. Play now and let Gemini guide you on an unforgettable journey!** """
 )

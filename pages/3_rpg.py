@@ -41,7 +41,6 @@ with st.sidebar:
 
 model = configure_model(st.session_state)
 
-
 if "messages" not in st.session_state:
     st.session_state.messages = []
     setup_prompt = """Hi Gemini, I would like that you behave like a RPG master, 
@@ -63,6 +62,35 @@ if model:
     chat_session = model.start_chat(history=st.session_state.messages)
 
     with st.sidebar:
+        with st.expander(label="Save or load adventures:"):
+            filename = st.text_input(label="Filename:")
+            save_button = st.button(label="Save")
+            try:
+                options_list = [
+                    str(path)
+                    for path in Path("adventures").glob("*.json")
+                    if path.is_file()
+                ]
+                adv_option = st.selectbox(
+                    label="Choose an adventure", options=options_list
+                )
+            except:
+                st.warning("There is no adventure saved!")
+            load_button = st.button(label="Load")
+            if save_button:
+                save_path = Path("adventures")
+                save_path.mkdir(parents=True, exist_ok=True)
+
+                with open(save_path / f"{filename}.json", "w") as file:
+                    json.dump(st.session_state.messages, file, indent=4)
+
+                st.success(body="Adventure saved with success!")
+            if load_button:
+                with open(file=f"{adv_option}", mode="r") as f:
+                    adventure = json.load(f)
+
+                st.session_state.messages = adventure
+                st.success(body="Adventure loaded with success!")
         with st.expander(label="Choose a character:"):
             try:
                 options = [
@@ -117,29 +145,33 @@ if model:
             button_roll_d20 = st.button(label=":game_die:")
 
         prompt = st.chat_input(placeholder="What do you want to do adventurer?")
-        with st.expander(label="Save or load adventures:"):
-            filename = st.text_input(label="Filename:")
-            save_button = st.button(label="Save")
+        with st.expander(label="AI companion"):
             try:
-                options_list = [str(path) for path in Path("adventures").glob("*.json") if path.is_file()]
-                adv_option = st.selectbox(label="Choose an adventure", options=options_list)
+                options_chars = [
+                    str(path) for path in Path("characters").glob("*") if path.is_dir()
+                ]
+
+                ai_character = st.selectbox(label="AI Character", options=options_chars)
+
+                with open(file=f"{ai_character}/character_sheet.json", mode="r") as f:
+                    character_sheet = json.load(f)
+
+                prompt_ai_character = f"""You must act like a RPG companion, so your messages should be interactions with the human player and the other LLM that is the RPG Master.
+                Your name is {character_sheet['name']} and you are a {character_sheet['gender']} {character_sheet['race']} {character_sheet['classe']}.\n
+                Character stats:\n
+                HP: {character_sheet['hp']}\n
+                Armor class: {character_sheet['ca']}\n
+                Strength: {character_sheet['stats']['strength']} (modifier {character_sheet['stats']['strength_modifier']})\n
+                Dexterity: {character_sheet['stats']['dexterity']} (modifier {character_sheet['stats']['dexterity_modifier']})\n
+                Constitution: {character_sheet['stats']['constitution']} (modifier {character_sheet['stats']['constitution_modifier']})\n
+                Intelligence: {character_sheet['stats']['intelligence']} (modifier {character_sheet['stats']['intelligence_modifier']})\n
+                Wisdom: {character_sheet['stats']['wisdom']} (modifier {character_sheet['stats']['wisdom_modifier']})\n
+                Charisma: {character_sheet['stats']['charisma']} (modifier {character_sheet['stats']['charisma_modifier']})\n
+                Background story: {character_sheet['background']}
+                """
+                ai_companion_action_button = st.button(label="AI companion action")
             except:
-                st.warning("There is no adventure saved!")
-            load_button = st.button(label="Load")
-            if save_button:
-                save_path = Path("adventures")
-                save_path.mkdir(parents=True, exist_ok=True)
-
-                with open(save_path / f"{filename}.json", "w") as file:
-                    json.dump(st.session_state.messages, file, indent=4)
-
-                st.success(body="Adventure saved with success!")
-            if load_button:
-                with open(file=f"{adv_option}", mode="r") as f:
-                    adventure = json.load(f)
-                
-                st.session_state.messages = adventure
-                st.success(body="Adventure loaded with success!")
+                st.warning("There is no character created!")
 
     with st.container(border=True):
 
@@ -198,4 +230,26 @@ if model:
             if generate_image_button:
                 generate_image(
                     model=IMAGE_MODEL, prompt=img_prompt, show_user_prompt=True
+                )
+
+        if ai_companion_action_button:
+            model_companion = configure_model(st.session_state)
+            chat_companion_session = model_companion.start_chat(
+                history=[{"role": "user", "parts": [prompt_ai_character]}]
+            )
+            prompt_ai_companion = f"""Take an action based on the following messages:
+                                    '{st.session_state.messages[-2]['parts'][0]}'\n
+
+                                    '{st.session_state.messages[-1]['parts'][0]}'
+                                    """
+            process_user_input(
+                chat_session=chat_companion_session,
+                prompt=prompt_ai_companion,
+                ai_companion=True,
+            )
+            if enable_img_generation:
+                prompt_summary = f"""Summary the following text using 77 tokens at maximum: {st.session_state.messages[-1]["parts"][0]}"""
+                response = chat_session.send_message(prompt_summary)
+                generate_image(
+                    model=IMAGE_MODEL, prompt=response.text, show_user_prompt=False
                 )
