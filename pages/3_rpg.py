@@ -23,6 +23,8 @@ from utils import (
 
 _ = Path("img/tmp").mkdir(parents=True, exist_ok=True)
 
+st.set_page_config(page_title="Role Play Gemini", page_icon=":game_die:", layout="wide")
+
 if not torch_not_present:
     if not torch.cuda.is_available():
         st.warning(
@@ -30,8 +32,6 @@ if not torch_not_present:
             take more time to produce images through stable diffusion model. 
             We recommend that users without NVIDIA GPU don't use image generation."""
         )
-
-st.set_page_config(page_title="Role Play Gemini", page_icon=":game_die:", layout="wide")
 
 if "api_key" not in st.session_state:
     st.session_state.api_key = None
@@ -86,9 +86,9 @@ if model:
                 Charisma: {character_sheet['stats']['charisma']} (modifier {character_sheet['stats']['charisma_modifier']})\n
                 Background story: {character_sheet['background']}
                 """
-                char_button = st.button(label="Use this character")
             except:
                 st.warning("There is no character created!")
+            char_button = st.button(label="Use this character")
         enable_img_generation = st.toggle(
             label="Activate image generation", value=False
         )
@@ -100,7 +100,7 @@ if model:
                 generate_image_button = st.button(label="Generate image")
         col1, col2 = st.columns(2)
         with col1:
-            st.write("Record your voice message: ")
+            st.write("Voice input: ")
             text_from_voice = speech_to_text(
                 language="en",
                 start_prompt="🎙️",
