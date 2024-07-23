@@ -17,7 +17,7 @@ git clone https://github.com/jvscursulim/rpg-llm
 
 * Step 3: Create env with miniconda with python 3.9
 ```bash
-conda create -n env python=3.9
+conda create -n env
 ```
 
 * Step 4: Activate your new python environment
@@ -37,7 +37,11 @@ conda install -c conda-forge cudnn==8.9.7.29
 
 * Step 6: Install project dependencies
 ```bash
-pip install -r requirements.txt
+pip install pipenv
+```
+
+```bash
+pipenv install
 ```
 Observation: If you don't have a NVIDIA GPU, you will need to install Pytorch for CPU.
 
