@@ -117,6 +117,33 @@ if model:
             except:
                 st.warning("There is no character created!")
             char_button = st.button(label="Use this character")
+        with st.expander(label="AI companion"):
+            try:
+                options_chars = [
+                    str(path) for path in Path("characters").glob("*") if path.is_dir()
+                ]
+
+                ai_character = st.selectbox(label="AI Character", options=options_chars)
+
+                with open(file=f"{ai_character}/character_sheet.json", mode="r") as f:
+                    character_sheet = json.load(f)
+
+                prompt_ai_character = f"""You must act like a RPG companion, so your messages should be interactions with the human player and the other LLM that is the RPG Master.
+                Your name is {character_sheet['name']} and you are a {character_sheet['gender']} {character_sheet['race']} {character_sheet['classe']}.\n
+                Character stats:\n
+                HP: {character_sheet['hp']}\n
+                Armor class: {character_sheet['ca']}\n
+                Strength: {character_sheet['stats']['strength']} (modifier {character_sheet['stats']['strength_modifier']})\n
+                Dexterity: {character_sheet['stats']['dexterity']} (modifier {character_sheet['stats']['dexterity_modifier']})\n
+                Constitution: {character_sheet['stats']['constitution']} (modifier {character_sheet['stats']['constitution_modifier']})\n
+                Intelligence: {character_sheet['stats']['intelligence']} (modifier {character_sheet['stats']['intelligence_modifier']})\n
+                Wisdom: {character_sheet['stats']['wisdom']} (modifier {character_sheet['stats']['wisdom_modifier']})\n
+                Charisma: {character_sheet['stats']['charisma']} (modifier {character_sheet['stats']['charisma_modifier']})\n
+                Background story: {character_sheet['background']}
+                """
+            except:
+                st.warning("There is no character created!")
+            ai_companion_action_button = st.button(label="AI companion action")
         enable_img_generation = st.toggle(
             label="Activate image generation", value=False
         )
@@ -145,33 +172,6 @@ if model:
             button_roll_d20 = st.button(label=":game_die:")
 
         prompt = st.chat_input(placeholder="What do you want to do adventurer?")
-        with st.expander(label="AI companion"):
-            try:
-                options_chars = [
-                    str(path) for path in Path("characters").glob("*") if path.is_dir()
-                ]
-
-                ai_character = st.selectbox(label="AI Character", options=options_chars)
-
-                with open(file=f"{ai_character}/character_sheet.json", mode="r") as f:
-                    character_sheet = json.load(f)
-
-                prompt_ai_character = f"""You must act like a RPG companion, so your messages should be interactions with the human player and the other LLM that is the RPG Master.
-                Your name is {character_sheet['name']} and you are a {character_sheet['gender']} {character_sheet['race']} {character_sheet['classe']}.\n
-                Character stats:\n
-                HP: {character_sheet['hp']}\n
-                Armor class: {character_sheet['ca']}\n
-                Strength: {character_sheet['stats']['strength']} (modifier {character_sheet['stats']['strength_modifier']})\n
-                Dexterity: {character_sheet['stats']['dexterity']} (modifier {character_sheet['stats']['dexterity_modifier']})\n
-                Constitution: {character_sheet['stats']['constitution']} (modifier {character_sheet['stats']['constitution_modifier']})\n
-                Intelligence: {character_sheet['stats']['intelligence']} (modifier {character_sheet['stats']['intelligence_modifier']})\n
-                Wisdom: {character_sheet['stats']['wisdom']} (modifier {character_sheet['stats']['wisdom_modifier']})\n
-                Charisma: {character_sheet['stats']['charisma']} (modifier {character_sheet['stats']['charisma_modifier']})\n
-                Background story: {character_sheet['background']}
-                """
-                ai_companion_action_button = st.button(label="AI companion action")
-            except:
-                st.warning("There is no character created!")
 
     with st.container(border=True):
 
