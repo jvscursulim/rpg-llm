@@ -78,23 +78,27 @@ def generate_image(model: str, prompt: str, show_user_prompt: bool = False) -> N
         st.session_state.messages.append({"role": "model", "parts": timestamp + ".png"})
 
 
-def process_user_input(chat_session, prompt: str) -> None:
+def process_user_input(chat_session, prompt: str, ai_companion: bool = False) -> None:
     """Processes user input
 
     Args:
         chat_session: A Gemini chat session.
         prompt (str): A sequence of tokens that
         represents user command.
+        ai_companion (bool): Boolean flag that tells
+        if we are processing an input from a ai
+        companion. Defaults to False.
     """
 
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "parts": [prompt]})
     # Display user message in chat message container
-    with st.chat_message("user"):
-        st.markdown(prompt)
+    if not ai_companion:
+        with st.chat_message("user"):
+            st.markdown(prompt)
 
     # Display assistant response in chat message container
-    with st.chat_message("model", avatar="ai"):
+    with st.chat_message("model", avatar="ai" if not ai_companion else "🤖"):
         response = st.write_stream(
             response_generator(
                 chat_session=chat_session,
