@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-numpy = "*"
+numpy = "<2.0"
 pydantic = "*"
 streamlit = "*"
 google-generativeai = "*"
@@ -13,6 +13,7 @@ torch = "==2.3.0"
 torchvision = "==0.18.0"
 torchaudio = "==2.3.0"
 diffusers = "*"
+transformers = "*"
 
 [dev-packages]
 
