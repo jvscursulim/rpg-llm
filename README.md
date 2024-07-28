@@ -41,6 +41,21 @@ conda install -c conda-forge cudnn==8.9.7.29
 ```
 
 * Step 7: Install project dependencies
+
+```bash
+pip install google-generativeai numpy==1.26.4 pydantic streamlit streamlit-mic-recorder diffusers transformers
+```
+Pytorch installation
+NVIDIA GPU Users
+```bash
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+```
+CPU
+```bash
+pip install torch torchvision torchaudio
+```
+
+Installation with pipenv
 ```bash
 pip install pipenv
 ```
@@ -56,7 +71,7 @@ Observation: If you don't have a NVIDIA GPU, you will need to install Pytorch fo
 ```bash
 streamlit run home.py
 ```
-After this you will be redirected to a new tab on your browser where you will be able to interact with the RPG GPT.
+After this you will be redirected to a new tab on your browser where you will be able to interact with the Role Play Gemini.
 
 ![image](img/print_home.jpg)
 ![image](img/print_rpg_sheet.jpg)
