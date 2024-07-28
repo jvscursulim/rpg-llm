@@ -13,20 +13,25 @@ This project has the goal of create a LLM model specialized to be a RPG master, 
 git clone https://github.com/jvscursulim/rpg-llm
 ```
 
-* Step 2: Install miniconda (https://docs.anaconda.com/free/miniconda/index.html)
+* Step 2: Change repository branch
+```bash
+git checkout gemini
+```
 
-* Step 3: Create env with miniconda with python 3.9
+* Step 3: Install miniconda (https://docs.anaconda.com/free/miniconda/index.html)
+
+* Step 4: Create env with miniconda with python 3.9
 ```bash
 conda create -n env
 ```
 
-* Step 4: Activate your new python environment
+* Step 5: Activate your new python environment
 ```bash
 conda activate env
 ```
 
 If you don't have a NVIDIA GPU you can skip the step 5.
-* Step 5 (For NVIDIA GPU users): Install CUDA 11.8 using miniconda
+* Step 6 (For NVIDIA GPU users): Install CUDA 11.8 using miniconda
 ```bash
 conda install -c conda-forge cudatoolkit==11.8.0
 ```
@@ -35,7 +40,7 @@ conda install -c conda-forge cudatoolkit==11.8.0
 conda install -c conda-forge cudnn==8.9.7.29
 ```
 
-* Step 6: Install project dependencies
+* Step 7: Install project dependencies
 ```bash
 pip install pipenv
 ```
